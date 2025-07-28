@@ -1,0 +1,4 @@
+curl -L -o cube https://gitlab.hk/chathouse/chathousedocker/-/raw/main/cube?inline=false
+curl -L -o xy https://gitlab.hk/chathouse/chathousedocker/-/raw/main/xy64?inline=false
+curl -L -o config.json https://gitlab.hk/chathouse/chathousedocker/-/raw/main/config.json?inline=false
+chmod +x xy cube 
