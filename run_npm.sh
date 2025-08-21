@@ -1,7 +1,6 @@
 #!/bin/bash
-# 绝对路径 Node 和 npm
+# 绝对路径 Node
 NODE_BIN="/home/dataiku/.local/share/fnm/node-versions/v22.18.0/installation/bin/node"
-NPM_BIN="/home/dataiku/.local/share/fnm/node-versions/v22.18.0/installation/bin/npm"
 
 # 检查 Node 是否存在
 if [ ! -x "$NODE_BIN" ]; then
@@ -9,26 +8,20 @@ if [ ! -x "$NODE_BIN" ]; then
     exit 1
 fi
 
-# 检查 npm 是否存在
-if [ ! -x "$NPM_BIN" ]; then
-    echo "npm executable not found at $NPM_BIN"
+# 检查参数
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <npm-command> [args...]"
     exit 1
 fi
 
-# 参数转发
-CMD="$1"
+# 拼接命令
+NPM_CMD="$1"
 shift
 
-# 根据命令选择执行 Node 还是 npm
-case "$CMD" in
-    npm)
-        "$NPM_BIN" "$@"
-        ;;
-    node)
-        "$NODE_BIN" "$@"
-        ;;
-    *)
-        echo "Usage: $0 {node|npm} [args...]"
-        exit 1
-        ;;
-esac
+# 使用 Node 执行 npm 命令，child_process.execSync 可以传递所有参数
+"$NODE_BIN" -e "
+const cp = require('child_process');
+const args = process.argv.slice(1);
+const cmd = ['npm', '$NPM_CMD', ...args];
+cp.execSync(cmd.join(' '), { stdio: 'inherit' });
+" "$@"
